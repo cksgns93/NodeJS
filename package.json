@@ -1,0 +1,21 @@
+{
+  "name": "mynode",
+  "version": "1.0.0",
+  "description": "Hello I am readme file\r 안녕하세요? 저는 readme파일입니다.",
+  "main": "ex01.js",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "ejs": "^3.1.3",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "nodemon": "^2.0.4",
+    "oracledb": "^5.0.0",
+    "session-file-store": "^1.4.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

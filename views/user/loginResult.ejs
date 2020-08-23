@@ -1,0 +1,20 @@
+<%
+    console.log(typeof isLogin);
+    if(!isLogin){
+%>
+
+        <script>
+            alert('아이디 또는 비밀번호가 일치하지 않아요');
+            history.back();
+        </script>
+<%
+    }else{
+%>
+        <script>
+            //alert('<%=loginUser.name%>님 환영합니다.');
+            location.href='/';
+        </script>
+<%    
+    }
+
+%>

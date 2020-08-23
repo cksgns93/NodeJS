@@ -1,0 +1,81 @@
+<%- include ('../top') %>
+<%- include ('../nav') %>
+<div class="container" style="height:500px">
+    <h1 class="text-center mt-5">회원 정보 수정</h1>
+    <div class="col-md-10 offset-md-1 p-5">
+<%
+        if(userData.length<=0){
+%>
+        <script>
+            alert('존재하지 않는 회원입니다.');
+            history.back();
+        </script>
+<%
+        }else{
+%>
+    <form name="mf" id="mf" method="post" action="/users/edit" onsubmit="return check()">
+    <table class="table">
+        <tr>
+            <th width="20%">회원번호</th>
+            <td width="80%">
+                <input type="text" name="num" id="num" readonly value="<%=userData[0][0]%>" class="form-control" placeholder="Number">
+            </td>
+        </tr>
+        <tr>
+            <th width="20%">이름</th>
+            <td width="80%">
+                <input type="text" name="name" id="name" value="<%=userData[0][1]%>" class="form-control" placeholder="Name">
+            </td>
+        </tr>
+        <tr>
+            <th width="20%">아이디</th>
+            <td width="80%">
+                <input type="text" name="userid" id="userid" value="<%=userData[0][2]%>" class="form-control" placeholder="User Id">
+            </td>
+        </tr>
+        <tr>
+            <th width="20%">비밀번호</th>
+            <td width="80%">
+                <input type="password" name="pwd" id="pwd" class="form-control" placeholder="PassWord">
+            </td>
+        </tr>
+        <tr>
+            <th width="20%">이메일</th>
+            <td width="80%">
+                <input type="text" name="email" id="email" value="<%=userData[0][4]%>" class="form-control" placeholder="Email">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" class="text-center">
+                <button type="submit" class="btn btn-outline-success">수정처리</button>
+                <button type="reset" class="btn btn-outline-warning">다시쓰기</button>
+            </td>
+        </tr>
+    </table>
+</form>
+<%  }   %>
+</div>
+</div>
+<script>
+    function check(){
+        if(!mf.name.value){
+            alert('이름을 입력하세요');
+            mf.name.focus();
+            return false;
+        }
+        if(!mf.userid.value){
+            alert('아이디를 입력하세요');
+            mf.userid.focus();
+            return false;
+        }
+        if(!mf.pwd.value){
+            alert('비밀번호를 입력하세요');
+            mf.pwd.focus();
+            return false;
+        }
+        return true;
+
+    }
+</script>
+
+<%- include ('../foot') %>

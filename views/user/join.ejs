@@ -1,0 +1,90 @@
+<%- include ('../top') %>
+<%- include ('../nav') %>
+<div class="container" style="height:500px">
+    <h1 class="text-center mt-5"><%=title%></h1>
+    <div class="col-md-10 offset-md-1 p-5">
+    <form name="mf" id="mf" method="post" action="join" onsubmit="return check()">
+    <table class="table">
+        <tr>
+            <th width="20%">이름</th>
+            <td width="80%">
+                <input type="text" name="name" id="name" class="form-control" placeholder="Name">
+            </td>
+        </tr>
+        <tr>
+            <th width="20%">아이디</th>
+            <td width="80%">
+                <input type="text" name="userid" id="userid" onchange="idCheck()" class="form-control" placeholder="User Id">
+                <p id="idMsg"></p>
+            </td>
+        </tr>
+        <tr>
+            <th width="20%">비밀번호</th>
+            <td width="80%">
+                <input type="password" name="pwd" id="pwd" class="form-control" placeholder="PassWord">
+            </td>
+        </tr>
+        <tr>
+            <th width="20%">이메일</th>
+            <td width="80%">
+                <input type="text" name="email" id="email" class="form-control" placeholder="Email">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" class="text-center">
+                <button type="submit" class="btn btn-outline-success">회원가입</button>
+                <button type="reset" class="btn btn-outline-warning">다시쓰기</button>
+            </td>
+        </tr>
+    </table>
+</form>
+</div>
+</div>
+<script>
+    function idCheck(){
+        //사용자가 입력한 userid값 받기
+        var uid=$('#userid').val();
+        //alert(uid);
+        $.ajax({
+            type:'get',
+            url:'/idcheck?userid='+uid,
+            dataType:'json',
+            cache:false,
+            success:function(res){
+                //alert(JSON.stringify(res));
+                $('#idMsg').removeClass('text-danger')
+                            .removeClass('text-success');
+                if(res.isUse == true){
+                    $('#idMsg').html(res.userid+"는 사용가능한 아이디 입니다.").addClass('text-success');
+                }else{
+                    $('#idMsg').html(res.userid+"는 이미 사용 중 입니다.").addClass('text-danger');
+                }
+            },
+            error:function(err){
+                alert('error: '+err.status);
+            }
+        })
+
+    }//idCheck()-------------------
+    function check(){
+        if(!mf.name.value){
+            alert('이름을 입력하세요');
+            mf.name.focus();
+            return false;
+        }
+        if(!mf.userid.value){
+            alert('아이디를 입력하세요');
+            mf.userid.focus();
+            return false;
+        }
+        if(!mf.pwd.value){
+            alert('비밀번호를 입력하세요');
+            mf.pwd.focus();
+            return false;
+        }
+        return true;
+
+    }
+</script>
+
+<%- include ('../foot') %>
