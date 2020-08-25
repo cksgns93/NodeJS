@@ -224,7 +224,13 @@ exports.loginCheck=(data,req,res)=>{
                 var obj={};
                 if(result.rows.length==0){
                     //아이디와 비번이 틀린 경우
-                    obj.loginUser=null;
+                    var tmpUser={
+                        num:'',
+                        name:'',
+                        userid:'',
+                        email:''
+                    }
+                    obj.loginUser=tmpUser;
                     obj.isLogin=false;
                 }else{
                     //회원이 맞다면 obj.loginUser에 회원 정보를 저장하자.

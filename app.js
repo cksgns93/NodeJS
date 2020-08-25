@@ -32,9 +32,25 @@ app.use(session({
 
 //로그인 여부를 체크하는 미들웨어
 app.use(function(req,res,next){
-    console.log(`로그인체크 미들웨어: ${JSON.stringify(req.session.loginData)}`);
+    var sesObj=req.session.loginData//loginData=>loginUser를 저장함
+    console.dir(sesObj);
+    if(sesObj&& sesObj.loginUser!=null&&sesObj.loginUser.userid!=''){
+        res.locals.isLogin=true;
+        res.locals.loginUser=sesObj.loginUser;
+    }else{
+        var obj={
+            num:"",
+            userid:"",
+            name:"",
+            email:""
+        };
+        res.locals.isLogin=false;
+        res.locals.loginUser=obj;
+    }
+    
+    /* console.log(`로그인체크 미들웨어: ${JSON.stringify(req.session.loginData)}`);
     res.locals.isLogin=(req.session.loginData===undefined)?false:req.session.loginData.isLogin;
-    res.locals.userid=(req.session.loginData===undefined)?null:req.session.loginData.loginUser.userid
+    res.locals.userid=(req.session.loginData===undefined)?null:req.session.loginData.loginUser.userid */
     next();
 })
 
