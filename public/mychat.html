@@ -125,12 +125,153 @@
 			}
 		});
 
+		//#방 생성
 		socket.on('response',function(data){
 			console.dir(data);
 			showStatus("응답 데이터를 받았습니다: "+data.cmd+", "+data.code+", "+data.message);
+			var code=parseInt(data.code);
+			if(code==100){
+				//방을 만든 것
+				$('#btnRoomMake').prop('disabled',true);//방만들기 버튼 비활성화
+			}else if(code==300){
+				//방이 있는 것
+				alert(data.message)
+				$('#roomname').select();
+			}else if(code==500){
+				//클이 방을 퇴장했다면
+				disableChat();
+				$('#ulist').html('');
+				$('#taMsg').html('');
+				$('#btnRoomMake').prop('disabled',false);
+				$('#btnEnter').prop('disabled',false);
+			}
+		})//response end()
+		socket.on('room',function(data){
+			console.dir(data);
+			if(data.cmd=='ulist'){
+				//방에 참여한 유저 목록을 보내주었다면
+				var userCnt=data.users.length;
+				var str1="<p>입장한 User: "+userCnt+"명</p>";
+				str1+="<ul>";
+				for(var i=0;i<userCnt;i++){
+					var userNick=data.users[i];
+					str1+="<li>";
+					str1+=userNick;
+					str1+="</li>";
+				}
+				str1+="</ul>";
+				$('#ulist').html(str1);
+			}
 		})
-		
+
+		socket.on('message',function(data){
+			var sender=data.sender;
+			var type=data.type;
+			var msg=data.msg;
+			var time=data.time;
+			/* if(type=='text'){
+				var str=sender+">>"+msg+'    ['+time+']<br>';
+				$('#taMsg').append(str);
+			} */
+			if(sender!=mynick){
+				//다른 사람이 메시지를 보냈다면
+				var str="<p><label class='label label-danger'>"+sender+"</label>";
+					str+="&nbsp;&nbsp;&nbsp;"+msg+"</p>";
+				addMessage('other',str,time);
+			}
+		})
+
+		//#방 입장하기
+		$('#btnEnter').click(function(){
+			//입장할 방이름, 닉네임 얻기
+			var roomName=$('#roomname').val();
+			//닉네임 얻어오기
+			var nickName=$('#nickname').val();
+			
+			var bool = check(roomName,nickName);
+			if(bool){
+				enableChat();
+				mynick=nickName;
+				var str={
+					cmd:'enter',
+					roomName:roomName,
+					nickName:nickName
+				};
+				socket.emit('room',str);
+				$('#myinfo').html("MyInfo: #방이름: "+roomName+", Nick: "+nickName)
+							.addClass('text-primary');
+				$('#btnRoomMake').prop('disabled',true);
+				$('#btnEnter').prop('disabled',true);
+			}
+		})//방입장------------
+
+		//#3. 방 나가기 버튼 클릭시
+		$("#btnExit").click(function(){
+			var roomName=$('#roomname').val();
+			var nickName=$('#nickname').val();
+			var str={
+				cmd:'exit',
+				roomName:roomName,
+				nickName:nickName
+			};
+			socket.emit('room',str);
+		})
+
+		//#4. 방 삭제 버튼 클릭
+
+		//#5. 대화내용 입력후 엔터를 쳤을 때
+		$('#inputMsg').keydown(function(e){
+			if(e.keyCode==13){//엔터를 눌렀다면
+				//서버에 메시지 전송
+				var msg=$('#inputMsg').val();
+				var roomName=$('#roomname').val();
+				var nickName=$('#nickname').val();
+				var receiver='groupchat';
+				var str={
+					roomName:roomName, 	//방이름
+					sender:nickName,	//송신자 닉네임
+					receiver:receiver,	//수신자=>groupChat(전체), sendone(귓속말)
+					type:'text',		//데이터 유형 (text,icon)
+					msg:msg				//전송 메시지
+				}
+				/*서버에 'message'이벤트를 발생시켜 보내기*/
+				socket.emit('message',str);
+				$('#inputMsg').val('');
+
+				//내가 쓴 메시지를 스타일 줘서 오른쪽에 출력하기
+				var time=getTime();
+				var mymsg="<label class='label label-primary'>"+str.sender+"</label>";
+					mymsg+="&nbsp;&nbsp;&nbsp;"+msg;
+				addMessage('self' ,mymsg,time);
+			}
+		})//대화메시지 전송
 	})//$()end ---
+
+	var getTime = function(){
+		//년-월-일 시-분-초
+		var mdate=new Date();
+		var str=mdate.getFullYear()+"-"+(mdate.getMonth()+1)+"-"+mdate.getDate();
+		str+=" "+mdate.getHours()+":"+mdate.getMinutes()+":"+mdate.getSeconds();
+		return str;
+	}
+
+	var addMessage=function(writer,msg,time){
+		var img='<img src="images/me.png">';
+		if(writer==="other"){
+			img='<img src="images/others.png">'
+		}
+		var str="<li class='"+writer+"'>";
+			str+="<div class='avatar'>";
+			str+=img;
+			str+="</div>";
+			str+="<div class='message'>";
+			str+="<p>"+msg+"</p>";
+			str+="<time>"+time+"</time>";
+			str+="</div>";
+			str+="</li>";
+		
+		$('#taMsg').append(str);
+	}
 
 	function showStatus(str){
 		$('#status').html(str)
@@ -164,6 +305,7 @@
 		}
 		return true;
 	}
+	
 
 </script>	
 
